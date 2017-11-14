@@ -44,10 +44,10 @@ class OpggSpider(CrawlSpider):
             summoners_team_1 = match.xpath(XPATHS_GAME['summoners_team_1'])
             summoners_team_2 = match.xpath(XPATHS_GAME['summoners_team_2'])
             for summoner in summoners_team_1:
-                link = summoner.xpath(XPATHS_GAME['summoner']).extract_first()
+                link = summoner.xpath(XPATHS_GAME['profile_link']).extract_first()
                 yield Request(url="http:" + link, callback=self.parse_related_games)
             for summoner in summoners_team_2:
-                link = summoner.xpath(XPATHS_GAME['summoner']).extract_first()
+                link = summoner.xpath(XPATHS_GAME['profile_link']).extract_first()
                 yield Request(url="http:" + link, callback=self.parse_related_games)
 
             item = LoltoolsItem()
