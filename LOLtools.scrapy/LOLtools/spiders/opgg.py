@@ -3,45 +3,90 @@ import scrapy
 from scrapy import Request
 from scrapy.contrib.spiders import CrawlSpider
 from ..items import LoltoolsItem
-from ..constants import XPATHS_JOGO
+from ..constants import XPATHS_LADDER, XPATHS_GAME
 
 
-class OpggSpider(scrapy.Spider):
+class OpggSpider(CrawlSpider):
     name = 'opgg'
     allowed_domains = ['op.gg']
-    start_urls = ['http://br.op.gg/summoner/userName=paintay',
-                  'http://br.op.gg/summoner/userName=highnoon',
-                  'http://br.op.gg/summoner/userName=yopresidente1v9',
-                  'http://na.op.gg/summoner/userName=imaqtpie',
-                  'http://na.op.gg/summoner/userName=chowdog',
-                  'http://na.op.gg/summoner/userName=plankgang',
-                  'http://na.op.gg/summoner/userName=The%20Trump%20Trane']
+    servers = ['br', 'jp', 'euw', 'oce', 'lan', 'tr', 'www', 'na', 'eune', 'las', 'ru']
+    start_urls = ['http://' + x + '.op.gg/ranking/ladder/' for x in servers]
 
     def parse(self, response):
 
-        partidas = response.xpath(XPATHS_JOGO['_partidas'])
-        for partida in partidas:
-            tipo = partida.xpath(XPATHS_JOGO['_tipo']).extract_first().strip()
-            if tipo != 'Ranked Solo':
+        summoners = response.xpath(XPATHS_LADDER['_summoners']).extract()
+        for summoner in summoners:
+
+            yield Request(url="http:"+summoner, callback=self.parse_games)
+
+
+
+    def parse_games(self, response):
+
+        matches = response.xpath(XPATHS_GAME['_matches'])
+        for match in matches:
+            match_type = match.xpath(XPATHS_GAME['_match_type']).extract_first().strip()
+            if match_type != 'Ranked Solo':
                 continue
-            time_1 = []
-            time_2 = []
-            resultado = response.xpath(XPATHS_JOGO['resultado']).extract_first().strip()
-            champions_time_1 = partida.xpath(XPATHS_JOGO['time_1'])
-            champions_time_2 = partida.xpath(XPATHS_JOGO['time_2'])
-            for champion in champions_time_1:
-                champ = champion.xpath(XPATHS_JOGO['champion']).extract_first()
-                time_1.append(champ)
-            for champion in champions_time_2:
-                champ = champion.xpath(XPATHS_JOGO['champion']).extract_first()
-                time_2.append(champ)
+            team_1 = []
+            team_2 = []
+            result = response.xpath(XPATHS_GAME['result']).extract_first().strip()
+            ##TODO fix this god awful code
+            champions_team_1 = match.xpath(XPATHS_GAME['champions_team_1'])
+            champions_team_2 = match.xpath(XPATHS_GAME['champions_team_2'])
+            for champion in champions_team_1:
+                champ = champion.xpath(XPATHS_GAME['champion']).extract_first()
+                team_1.append(champ)
+            for champion in champions_team_2:
+                champ = champion.xpath(XPATHS_GAME['champion']).extract_first()
+                team_2.append(champ)
+
+            summoners_team_1 = match.xpath(XPATHS_GAME['summoners_team_1'])
+            summoners_team_2 = match.xpath(XPATHS_GAME['summoners_team_2'])
+            for summoner in summoners_team_1:
+                link = summoner.xpath(XPATHS_GAME['summoner']).extract_first()
+                yield Request(url="http:" + link, callback=self.parse_related_games)
+            for summoner in summoners_team_2:
+                link = summoner.xpath(XPATHS_GAME['summoner']).extract_first()
+                yield Request(url="http:" + link, callback=self.parse_related_games)
 
             item = LoltoolsItem()
-            item['resultado'] = resultado
-            item['elo'] = response.xpath(XPATHS_JOGO['elo']).extract_first()
-            item['time_1'] = time_1
-            item['time_2'] = time_2
-            item['timestamp'] = response.xpath(XPATHS_JOGO['timestamp']).extract_first()
+            item['server'] = response.url.split('/')[2].split('.')[0]
+            item['result'] = result
+            item['mmr'] = response.xpath(XPATHS_GAME['mmr']).extract_first()
+            item['team_1'] = team_1
+            item['team_2'] = team_2
+            item['timestamp'] = match.xpath(XPATHS_GAME['timestamp']).extract_first()
 
+            yield item
+
+    def parse_related_games(self, response):
+        """In a hurry so copy-pasting shit code like this one"""
+
+        matches = response.xpath(XPATHS_GAME['_matches'])
+        for match in matches:
+            match_type = match.xpath(XPATHS_GAME['_match_type']).extract_first().strip()
+            if match_type != 'Ranked Solo':
+                continue
+            team_1 = []
+            team_2 = []
+            result = response.xpath(XPATHS_GAME['result']).extract_first().strip()
+            ## that looks so bad
+            champions_team_1 = match.xpath(XPATHS_GAME['champions_team_1'])
+            champions_team_2 = match.xpath(XPATHS_GAME['champions_team_2'])
+            for champion in champions_team_1:
+                champ = champion.xpath(XPATHS_GAME['champion']).extract_first()
+                team_1.append(champ)
+            for champion in champions_team_2:
+                champ = champion.xpath(XPATHS_GAME['champion']).extract_first()
+                team_2.append(champ)
+
+            item = LoltoolsItem()
+            item['server'] = response.url.split('/')[2].split('.')[0]
+            item['result'] = result
+            item['mmr'] = response.xpath(XPATHS_GAME['mmr']).extract_first()
+            item['team_1'] = team_1
+            item['team_2'] = team_2
+            item['timestamp'] = match.xpath(XPATHS_GAME['timestamp']).extract_first()
 
             yield item
