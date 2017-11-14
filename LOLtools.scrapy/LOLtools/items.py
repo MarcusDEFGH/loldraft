@@ -9,8 +9,9 @@ import scrapy
 
 
 class LoltoolsItem(scrapy.Item):
-    elo = scrapy.Field()
-    resultado = scrapy.Field()
-    time_1 = scrapy.Field()
-    time_2 = scrapy.Field()
     timestamp = scrapy.Field()
+    server = scrapy.Field()
+    mmr = scrapy.Field()
+    result = scrapy.Field()
+    team_1 = scrapy.Field()
+    team_2 = scrapy.Field()
