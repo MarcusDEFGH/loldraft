@@ -9,7 +9,8 @@ XPATHS_GAME = {
     'summoners_team_2': './/div[@class="Team"][2]//div[@class="SummonerName"]',
     'champion': './/div/text()',
     'timestamp': './/div[@class="TimeStamp"]//span/text()',
-    'profile_link': './/a/@href'
+    'profile_link': './/a/@href',
+    'name': '//div[@class="Information"]/span//text()'
 }
 
 
