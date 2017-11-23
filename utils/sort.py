@@ -37,7 +37,6 @@ def path_join(server, mmr, filetype):
     return _base_path + '\\' + server + '\\' + mmr + '.' + filetype
 
 games = json.load(open(_base_path + '\\' + 'opgg.json'))
-#pre_processed = open('db.json', 'a')
 stamps = []
 for game in games:
     print(games.index(game))
@@ -49,10 +48,8 @@ for game in games:
     if game['timestamp'] in str(stamps) or game['result']=='Remake':
         continue
     else:
-        #import ipdb; ipdb.set_trace()
         stamps.append(game['timestamp'])
         del game['timestamp']
-        #import ipdb; ipdb.set_trace()
         for champion in game['team_1']:
             game['team_1'][game['team_1'].index(
                 champion)] = champions.index(champion)
@@ -63,12 +60,8 @@ for game in games:
             game['result'] = 1
         else:
             game['result'] = 0
-        #import ipdb; ipdb.set_trace()
         f.write(str(game) + "\n")
         pre_processed.write(str(game) +"\n")
 
     pre_processed.close()
     f.close()
-
-
-#[i for i, j in zip(a, b) if i == j]
