@@ -26,11 +26,11 @@ class OpggSpider(CrawlSpider):
         matches = response.xpath(XPATHS_GAME['_matches'])
         for match in matches:
             match_type = match.xpath(XPATHS_GAME['_match_type']).extract_first().strip()
-            if match_type != 'Ranked Solo':
+            result = response.xpath(XPATHS_GAME['result']).extract_first().strip()
+            if match_type != 'Ranked Solo' or result == 'Remake':
                 continue
             team_1 = []
             team_2 = []
-            result = response.xpath(XPATHS_GAME['result']).extract_first().strip()
             ##TODO fix this god awful code
             champions_team_1 = match.xpath(XPATHS_GAME['champions_team_1'])
             champions_team_2 = match.xpath(XPATHS_GAME['champions_team_2'])
@@ -43,6 +43,7 @@ class OpggSpider(CrawlSpider):
 
             summoners_team_1 = match.xpath(XPATHS_GAME['summoners_team_1'])
             summoners_team_2 = match.xpath(XPATHS_GAME['summoners_team_2'])
+
             for summoner in summoners_team_1:
                 link = summoner.xpath(XPATHS_GAME['profile_link']).extract_first()
                 yield Request(url="http:" + link, callback=self.parse_related_games)
@@ -51,8 +52,21 @@ class OpggSpider(CrawlSpider):
                 yield Request(url="http:" + link, callback=self.parse_related_games)
 
             item = LoltoolsItem()
+            result = response.xpath(
+                XPATHS_GAME['result']).extract_first().strip()
+            name = response.xpath(XPATHS_GAME['name']).extract_first()
+           # import ipdb; ipdb.set_trace()
+            if name in summoners_team_1.xpath('.//text()').extract():
+                if result == 'Victory':
+                    item['result'] = result
+                else:
+                    item['result'] = 'Defeat'
+            else:
+                if result == 'Victory':
+                    item['result'] = 'Defeat'
+                else:
+                    item['result'] = result
             item['server'] = response.url.split('/')[2].split('.')[0]
-            item['result'] = result
             item['mmr'] = response.xpath(XPATHS_GAME['mmr']).extract_first()
             item['team_1'] = team_1
             item['team_2'] = team_2
@@ -81,9 +95,23 @@ class OpggSpider(CrawlSpider):
                 champ = champion.xpath(XPATHS_GAME['champion']).extract_first()
                 team_2.append(champ)
 
+            summoners_team_1 = match.xpath(XPATHS_GAME['summoners_team_1'])
             item = LoltoolsItem()
+            result = response.xpath(
+                XPATHS_GAME['result']).extract_first().strip()
+            name = response.xpath(XPATHS_GAME['name']).extract_first()
+           # import ipdb; ipdb.set_trace()
+            if name in summoners_team_1.xpath('.//text()').extract():
+                if result == 'Victory':
+                    item['result'] = result
+                else:
+                    item['result'] = 'Defeat'
+            else:
+                if result == 'Victory':
+                    item['result'] = 'Defeat'
+                else:
+                    item['result'] = result
             item['server'] = response.url.split('/')[2].split('.')[0]
-            item['result'] = result
             item['mmr'] = response.xpath(XPATHS_GAME['mmr']).extract_first()
             item['team_1'] = team_1
             item['team_2'] = team_2
