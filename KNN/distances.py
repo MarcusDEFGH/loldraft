@@ -1,5 +1,6 @@
 import ast
 from numpy import average
+from random import shuffle
 
 def compare(team_1, team_2):
     return len([i for i, j in zip(team_1, team_2) if i == j])
@@ -37,47 +38,29 @@ def knn(game_q, db, k):
         return 0
 
 
-def main(size, krange, database):
+def split_by_percentage(l, percentage):
+    size = len(l)
+    l_set_1 = l[:int((size / 100) * percentage)]
+    l_set_2 = l[int((size / 100) * percentage):]
+    return l_set_1, l_set_2
+
+def main(database):
     accuracy = open('accuracy.txt', 'a')
     db_file = open(database, 'r')
     games = db_file.readlines()
     db_file.close()
-    train_set = []
-    test_set = []
-    for i in range(krange):
-        if size * i == 0:
-            size_i = 1
-        else:
-            size_i = size * i
-        train_set = games[size + (size * i):][:size]
-        test_set = games[:size + (size * i)] + \
-            games[size + (size * (i + 1)):]
+    for i in range(10):
+        shuffle(games)
+        train_set, test_set = split_by_percentage(games, 70)
         results = []
         predictions = []
         for game in train_set:
             results.append(ast.literal_eval(game)['result'])
             index = train_set.index(game) + 1
             predictions.append(knn(ast.literal_eval(game), test_set, 3))
-            accuracy.write((str(index) + ' - ' + str(compare(results, predictions)/index)) + '\n')
-        accuracy.write(str(compare(results, predictions) / size) + '\n')
+            # accuracy.write(
+            #     (str(index) + ' - ' + str(compare(results, predictions) / index)) + '\n')
+        accuracy.write(str(compare(results, predictions) / len(train_set)) + '\n')
+    accuracy.close()
 
-
-
-# def kfold(size, krange, db):
-#     train_set = []
-#     test_set = []
-#     games = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
-#     for i in range(krange):
-#         import ipdb; ipdb.set_trace()
-#         if size*i == 0:
-#             size_i = 1
-#         else:
-#             size_i = size*i
-#         train_set = games[size + (size * i):][:size]
-#         test_set = games[:size + (size * i)] + \
-#             games[size + (size * (i + 1)):]
-#         print(train_set)
-#         print(test_set)
-
-
-main(1000, 16, db)
+main(db)
