@@ -45,17 +45,25 @@ for game in games:
     del game['mmr'], game['server']
     f = open(path_join(server, mmr, 'json'), 'a+')
     pre_processed = open('db.json', 'a+')
-    if game['timestamp'] in str(stamps) or game['result']=='Remake':
+    if game['timestamp'] in str(stamps) or game['result'] =='Remake':
         continue
     else:
         stamps.append(game['timestamp'])
         del game['timestamp']
         for champion in game['team_1']:
-            game['team_1'][game['team_1'].index(
-                champion)] = champions.index(champion)
+            if champion == None:
+                game['team_1'][game['team_1'].index(
+                    champion)] = 138
+            else:
+                game['team_1'][game['team_1'].index(
+                    champion)] = champions.index(champion)
         for champion in game['team_2']:
-            game['team_2'][game['team_2'].index(
-                champion)] = champions.index(champion)
+            if champion == None:
+                game['team_1'][game['team_1'].index(
+                    champion)] = 138
+            else:
+                game['team_2'][game['team_2'].index(
+                    champion)] = champions.index(champion)
         if game['result'] == 'Victory':
             game['result'] = 1
         else:
