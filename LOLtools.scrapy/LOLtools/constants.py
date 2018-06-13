@@ -7,7 +7,7 @@ XPATHS_GAME = {
     'champions_team_2': './/div[@class="Team"][2]//div[@class="ChampionImage"]',
     'summoners_team_1': './/div[@class="Team"][1]//div[@class="SummonerName"]',
     'summoners_team_2': './/div[@class="Team"][2]//div[@class="SummonerName"]',
-    'champion': './/div/text()',
+    'champion_name': './/div/text()',
     'timestamp': './/div[@class="TimeStamp"]//span/text()',
     'profile_link': './/a/@href',
     'name': '//div[@class="Information"]/span//text()'
@@ -15,5 +15,5 @@ XPATHS_GAME = {
 
 
 XPATHS_LADDER = {
-    '_summoners': '//td[@class="SummonerName Cell"]/a/@href'
+    '_summoners': '//a[not(contains(@class, "ranking-highest__name"))]//@href[contains(.,"user")]'
 }
