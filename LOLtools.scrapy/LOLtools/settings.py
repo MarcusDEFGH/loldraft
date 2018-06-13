@@ -15,12 +15,12 @@ SPIDER_MODULES = ['LOLtools.spiders']
 NEWSPIDER_MODULE = 'LOLtools.spiders'
 
 
-ITEM_PIPELINES = {'stack.pipelines.MongoDBPipeline': 300, }
+ITEM_PIPELINES = {'LOLtools.pipelines.MongoDBPipeline': 300, }
 
 MONGODB_SERVER = "localhost"
 MONGODB_PORT = 27017
-MONGODB_DB = "stackoverflow"
-MONGODB_COLLECTION = "questions"
+MONGODB_DB = "opgg"
+MONGODB_COLLECTION = "matches"
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'LOLtools (+http://www.yourdomain.com)'
