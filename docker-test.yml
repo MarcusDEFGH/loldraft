@@ -1,0 +1,30 @@
+version: '2'
+volumes:
+  mongo-data:
+    driver: local
+
+services:
+
+  scrapy-lol:
+    user: root
+    restart: 'no'
+    container_name: scrapy-lol
+    command: /bin/bash
+    volumes:
+      - .:/app
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-test
+    links:
+      - mongo
+
+  mongo:
+    image: mongo:latest
+    hostname: mongo
+    restart: on-failure
+    volumes:
+      - mongo-data:/data/db
+    expose:
+      - 27017
+    ports:
+      - 27017:27017

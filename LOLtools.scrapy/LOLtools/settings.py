@@ -17,7 +17,7 @@ NEWSPIDER_MODULE = 'LOLtools.spiders'
 
 ITEM_PIPELINES = {'LOLtools.pipelines.MongoDBPipeline': 300, }
 
-MONGODB_SERVER = "localhost"
+MONGODB_SERVER = 'mongodb://mongo:27017'
 MONGODB_PORT = 27017
 MONGODB_DB = "opgg"
 MONGODB_COLLECTION = "matches"
