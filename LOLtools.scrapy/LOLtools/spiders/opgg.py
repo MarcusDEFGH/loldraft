@@ -23,7 +23,7 @@ class OpggSpider(CrawlSpider):
             link = selector.xpath(XPATHS_GAME['profile_link']).extract_first()
             meta = response.meta.copy()
             meta.update({'related': True})
-            yield Request(url="http:" + link,
+            yield splashRequest(url="http:" + link,
                           callback=self.parse_games, meta=meta)
 
     def parse(self, response):
@@ -32,7 +32,7 @@ class OpggSpider(CrawlSpider):
             yield Request(url="http:"+summoner, callback=self.parse_games)
 
     def parse_games(self, response):
-
+        import ipdb; ipdb.set_trace()
         matches = response.xpath(XPATHS_GAME['_matches'])
         for match in matches:
             match_type = match.xpath(XPATHS_GAME['_match_type']).extract_first().strip()
