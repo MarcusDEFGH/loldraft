@@ -14,3 +14,30 @@ services:
       - 27017
     ports:
       - 27017:27017
+
+  rabbitmq:
+    hostname: rabbitmq
+    restart: always
+    image: rabbitmq:latest
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_DEFAULT_VHOST=guest
+    expose:
+        - 5672
+    ports:
+        - "5672:5672"
+
+  worker:
+    image: worker
+    build:
+        context: .
+        dockerfile: dockerfile
+    restart: on-failure
+    container_name: worker
+    volumes:
+        - .:/app
+    links:
+        - rabbitmq
+    depends_on:
+        - rabbitmq
