@@ -1,10 +1,10 @@
-from .tasks import train
+from KNN.tasks import train
 
 # import ipdb; ipdb.set_trace()
 
 db = 'KNN/db.json'
-a = {'result': 0, 'team_1': [131, 42, 67, 128,
-                             101], 'team_2': [44, 96, 136, 115, 70]}
+a = {'result': 0, 'team_1': [131, 42, 67, 128, 101],
+                  'team_2': [44, 96, 136, 115, 70]}
 
 
 def main(size, krange, database):
@@ -17,4 +17,4 @@ def main(size, krange, database):
         train.delay(size, i, games)
 
 
-main(1000, 1, db)
+main(1000, 5, db)
