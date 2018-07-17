@@ -5,4 +5,4 @@ ADD ./KNN/ /app/
 WORKDIR /app/
 RUN pip install -r requirements.txt
 #CMD ["/bin/bash"]
-ENTRYPOINT celery -A KNN worker --concurrency=20 --loglevel=info
+ENTRYPOINT celery -A KNN worker --concurrency=20 --loglevel=debug --settings=celery
