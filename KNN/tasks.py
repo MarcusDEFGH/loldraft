@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 import ast
 from numpy import average
-from KNN.celery import app
+from KNN.celery_worker import app
 
 
 def compare(team_1, team_2):
@@ -30,15 +30,28 @@ def knn(game_q, db, k):
         return 0
 
 
-@app.task
 def predict(game, test_set, index, results):
     return(knn(ast.literal_eval(game), test_set, 3))
 
 
-@app.task
-def write_accuracy(string):
-    with open('celery.txt', 'a') as accuracy:
+def write_accuracy(string, num):
+    with open('celery{}.txt'.format(num), 'a') as accuracy:
         accuracy.write(string)
+
+
+@app.task
+def train(size, i, games):
+    train_set = games[size + (size * i):][:size]
+    test_set = games[:size + (size * i)] + \
+        games[size + (size * (i + 1)):]
+    results = []
+    predictions = []
+    for game in train_set:
+        results.append(ast.literal_eval(game)['result'])
+        index = train_set.index(game) + 1
+        predictions.append(predict(game, test_set, index, results))
+    write_accuracy(str(compare(results, predictions) / size) + '\n', i)
+
 
 
 
