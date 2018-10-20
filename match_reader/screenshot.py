@@ -9,5 +9,4 @@ if __name__ == '__main__':
     # save image file
     im.save('screenshot.png')
 
-
 #-#

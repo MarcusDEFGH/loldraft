@@ -102,24 +102,24 @@ def crop_champions(img):
 # img = cv2.imread('champions.png')
 # crop_champions(img)
 
-coordinates_team1 = [[370, 260, 439, 328],
-                        [332, 340, 401, 408],
-                        [332, 420, 401, 488],
-                        [332, 500, 401, 568],
-                        [332, 580, 401, 648]]
 
-coordinates_team2 = [[1517, 260, 1586, 328],
-                        [1517, 340, 1586, 408],
-                        [1517, 420, 1586, 488],
-                        [1517, 500, 1586, 568],
-                        [1517, 580, 1586, 648]]
+def identify_champions(img_name):
+    coordinates_team1 = [[370, 260, 439, 328],
+                         [332, 340, 401, 408],
+                         [332, 420, 401, 488],
+                         [332, 500, 401, 568],
+                         [332, 580, 401, 648]]
 
+    coordinates_team2 = [[1517, 260, 1586, 328],
+                         [1517, 340, 1586, 408],
+                         [1517, 420, 1586, 488],
+                         [1517, 500, 1586, 568],
+                         [1517, 580, 1586, 648]]
 
-def identify_champions(coordinates):
     team = []
 
     method = cv2.TM_SQDIFF_NORMED
-    img = cv2.imread('champions.png')
+    img = cv2.imread(img_name)
 
     for coordinate in coordinates:
         MPx, MPy, MPx2, MPy2 = coordinate
@@ -147,8 +147,3 @@ def identify_champions(coordinates):
             if len(team) == 5:
                 return team
     return team
-
-img = cv2.imread('champions.png')
-
-print(identify_champions(img, coordinates_team1))
-print(identify_champions(img, coordinates_team2))
