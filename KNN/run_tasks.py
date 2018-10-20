@@ -1,8 +1,8 @@
-from KNN.tasks import train
+from knn.tasks import train
 
 # import ipdb; ipdb.set_trace()
 
-db = 'KNN/db.json'
+db = 'knn/db.json'
 a = {'result': 0, 'team_1': [131, 42, 67, 128, 101],
                   'team_2': [44, 96, 136, 115, 70]}
 
@@ -18,3 +18,5 @@ def main(size, krange, database):
 
 
 main(1000, 5, db)
+
+ 

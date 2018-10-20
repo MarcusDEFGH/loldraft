@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 import ast
 from numpy import average
-from KNN.celery_worker import app
+from knn.celery_worker import app
 
 
 def compare(team_1, team_2):
@@ -30,7 +30,7 @@ def knn(game_q, db, k):
         return 0
 
 
-def predict(game, test_set, index, results):
+def predict(game, test_set):
     return(knn(ast.literal_eval(game), test_set, 3))
 
 
@@ -49,7 +49,7 @@ def train(size, i, games):
     for game in train_set:
         results.append(ast.literal_eval(game)['result'])
         index = train_set.index(game) + 1
-        predictions.append(predict(game, test_set, index, results))
+        predictions.append(predict(game, test_set))
     write_accuracy(str(compare(results, predictions) / size) + '\n', i)
 
 
