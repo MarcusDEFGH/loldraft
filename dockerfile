@@ -1,8 +1,7 @@
 FROM python:3.6.4
 EXPOSE 5757
 ADD requirements.txt /app/requirements.txt
-ADD ./KNN/ /app/
+ADD ./knn/ /app/
 WORKDIR /app/
 RUN pip install -r requirements.txt
-#CMD ["/bin/bash"]
-ENTRYPOINT celery -A KNN worker --concurrency=20 --loglevel=debug
+ENTRYPOINT celery -A knn worker --concurrency=20 --loglevel=debug
