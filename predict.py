@@ -12,7 +12,7 @@ def main():
     games = db_file.readlines()
     db_file.close()
     if predict(str(game), games):
-        return "Dale"
+        return "Arrocha papai!"
     else:
         return "Quita men"
 
