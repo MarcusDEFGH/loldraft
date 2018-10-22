@@ -13,7 +13,19 @@ XPATHS_GAME = {
     'name': '//div[@class="Information"]/span//text()'
 }
 
+XPATH_CHAMPIONS = {
+    'role': ('//div[contains(@class, "champion-'
+             'index__champion-item ")]/@class'),
+    'name': ('//div[contains(@class, "champion-index__champion-item__name")]'
+             '//text()')
+}
 
 XPATHS_LADDER = {
-    '_summoners': '//a[not(contains(@class, "ranking-highest__name"))]//@href[contains(.,"user")]'
+    '_summoners': '//a[not(contains(@class, "ranking-highest'
+                  '__name"))]//@href[contains(.,"user")]'
 }
+
+
+servers = ['br', 'jp', 'euw', 'oce', 'lan', 'tr', 'www', 'na', 'eune',
+           'las', 'ru']
+REGIONS = ['http://' + server + '.op.gg/ranking/ladder/' for server in servers]

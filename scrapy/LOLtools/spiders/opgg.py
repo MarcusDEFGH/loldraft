@@ -3,16 +3,30 @@ import scrapy
 from scrapy import Request
 from scrapy.contrib.spiders import CrawlSpider
 from ..items import LoltoolsItem
-from ..constants import XPATHS_LADDER, XPATHS_GAME
+from ..constants import XPATH_CHAMPIONS, XPATHS_LADDER, XPATHS_GAME, REGIONS
 
 
 class OpggSpider(CrawlSpider):
     name = 'opgg'
     allowed_domains = ['op.gg']
-    servers = ['br', 'jp', 'euw', 'oce', 'lan', 'tr', 'www', 'na', 'eune',
-               'las', 'ru']
-    start_urls = ['http://' +
-                  server + '.op.gg/ranking/ladder/' for server in servers]
+    start_urls = ['http://br.op.gg/champion/statistics']
+
+    def fill_team(self, team, roles):
+        formation = ['TOP', 'JUNGLE', 'MID', 'SUPPORT', 'ADC']
+        ordered_team = ['TOP', 'JUNGLE', 'MID', 'SUPPORT', 'ADC']
+
+        for index, item in enumerate(formation):
+            for champion in team:
+                champion_role = roles[champion - 1]
+                if (item == champion_role) and (item in ordered_team):
+                    ordered_team[index] = champion
+                    team.remove(champion)
+        while team:
+            for index, slot in enumerate(ordered_team):
+                if slot in formation:
+                    ordered_team[index] = team[0]
+                    del team[0]
+        return ordered_team
 
     def extract_champions(self, selector):
         for champion in selector:
@@ -26,13 +40,24 @@ class OpggSpider(CrawlSpider):
             yield Request(url="http:" + link,
                           callback=self.parse_games, meta=meta)
 
-    def parse(self, response):
+    def parse_regions(self, response):
         summoners = response.xpath(XPATHS_LADDER['_summoners']).extract()
         for summoner in summoners:
-            yield Request(url="http:"+summoner, callback=self.parse_games)
+            yield Request(url="http:"+summoner, callback=self.parse_games, meta=response.meta)
+
+    def parse(self, response):
+        meta = response.meta.copy()
+        meta['info'] = {
+            'champions': response.xpath(XPATH_CHAMPIONS['name']).extract(),
+            'roles': [champion.split('--')[1].split()[0] for champion in
+                      response.xpath(XPATH_CHAMPIONS['role']).extract()]
+        }
+        for region in REGIONS:
+            yield Request(url=region, callback=self.parse_regions, meta=meta)
 
     def parse_games(self, response):
-
+        champions = response.meta['info']['champions']
+        roles = response.meta['info']['roles']
         matches = response.xpath(XPATHS_GAME['_matches'])
         for match in matches:
             match_type = match.xpath(XPATHS_GAME['_match_type']).extract_first().strip()
@@ -67,8 +92,10 @@ class OpggSpider(CrawlSpider):
                     item['result'] = result
             item['server'] = response.url.split('/')[2].split('.')[0]
             item['mmr'] = response.xpath(XPATHS_GAME['mmr']).extract_first()
-            item['team_1'] = team_1
-            item['team_2'] = team_2
+            team_1 = [champions.index(champion) for champion in team_1]
+            team_2 = [champions.index(champion) for champion in team_2]
+            item['team_1'] = self.fill_team(team_1, roles)
+            item['team_2'] = self.fill_team(team_2, roles)
             item['timestamp'] = match.xpath(XPATHS_GAME['timestamp']).extract_first()
 
             yield item

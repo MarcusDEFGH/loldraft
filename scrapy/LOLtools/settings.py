@@ -15,11 +15,19 @@ SPIDER_MODULES = ['LOLtools.spiders']
 NEWSPIDER_MODULE = 'LOLtools.spiders'
 
 
+ITEM_PIPELINES = {'LOLtools.pipelines.MongoDBPipeline': 300, }
+
+MONGODB_SERVER = 'mongodb://mongo:27017'
+MONGODB_PORT = 27017
+MONGODB_DB = "opgg"
+MONGODB_COLLECTION = "matches"
+
+
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'LOLtools (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
