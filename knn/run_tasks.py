@@ -1,6 +1,5 @@
 from knn.tasks import train
 
-# import ipdb; ipdb.set_trace()
 
 db = 'knn/db.json'
 a = {'result': 0, 'team_1': [131, 42, 67, 128, 101],

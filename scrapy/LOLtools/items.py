@@ -8,7 +8,7 @@
 import scrapy
 
 
-class LoltoolsItem(scrapy.Item):
+class Game(scrapy.Item):
     timestamp = scrapy.Field()
     server = scrapy.Field()
     mmr = scrapy.Field()
