@@ -1,5 +1,5 @@
 XPATHS_GAME = {
-    'mmr': '//span[@class="tierRank"]/text()',
+    'mmr': '//div[@class="TierRank"]/text()',
     'result': './/div[@class="GameResult"]/text()',
     '_match_type': './/div[@class="GameType"]/text()',
     '_matches': '//div[@class="GameItemWrap"]',
