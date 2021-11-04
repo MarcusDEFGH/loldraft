@@ -60,14 +60,14 @@ class OpggSpider(scrapy.Spider):
                           ).extract()[1] for summoner in summoners_t1]
             if player in players_t1:
                 if result == 'Victory':
-                    item['result'] = result
+                    item['result'] = 'Victory'
                 else:
                     item['result'] = 'Defeat'
             else:
                 if result == 'Victory':
                     item['result'] = 'Defeat'
                 else:
-                    item['result'] = result
+                    item['result'] = 'Victory'
             item['server'] = response.url.split('/')[2].split('.')[0]
             item['mmr'] = response.xpath(XPATHS_GAME['mmr']).extract_first()
             item['team_1'] = team_1
