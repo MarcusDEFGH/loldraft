@@ -3,7 +3,7 @@ Scrapy==1.5.0
 celery==4.1.1
 numpy==1.14.0
 ipdb==0.10.3
-ipython==6.2.1
+ipython==7.16.3
 ipython-genutils==0.2.0
 EasyProcess==0.2.3
 pyscreenshot==0.4.2
